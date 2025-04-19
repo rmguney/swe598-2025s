@@ -50,17 +50,33 @@ export default function RiskMitigations({ risks }) {
   function renderEnhancedRiskSection(sectionRisks, title, bgColor, accentColor) {
     if (sectionRisks.length === 0) return null;
     
+    // Define color classes based on accentColor parameter
+    const borderColorClass = accentColor === 'red' ? 'border-red-500' : 
+                            accentColor === 'orange' ? 'border-orange-500' : 
+                            accentColor === 'yellow' ? 'border-yellow-500' : 
+                            'border-green-500';
+                            
+    const bgAccentClass = accentColor === 'red' ? 'bg-red-500/20' : 
+                         accentColor === 'orange' ? 'bg-orange-500/20' : 
+                         accentColor === 'yellow' ? 'bg-yellow-500/20' : 
+                         'bg-green-500/20';
+                         
+    const textAccentClass = accentColor === 'red' ? 'text-red-600 dark:text-red-400' : 
+                           accentColor === 'orange' ? 'text-orange-600 dark:text-orange-400' : 
+                           accentColor === 'yellow' ? 'text-yellow-600 dark:text-yellow-400' : 
+                           'text-green-600 dark:text-green-400';
+    
     return (
       <div className={`${bgColor} rounded-lg mb-6 overflow-hidden`}>
-        <div className={`border-l-4 border-${accentColor}-500 p-4`}>
+        <div className={`border-l-4 ${borderColorClass} p-4`}>
           <h3 className="font-semibold text-lg mb-2 flex items-center justify-between">
             <div className="flex items-center">
-              <span className="inline-block w-6 h-6 rounded-full bg-white/50 dark:bg-black/30 flex items-center justify-center text-xs font-bold mr-2">
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white/50 dark:bg-black/30 text-xs font-bold mr-2">
                 {sectionRisks.length}
               </span>
               {title}
             </div>
-            <span className={`text-xs px-2 py-1 bg-${accentColor}-500/20 rounded-full`}>
+            <span className={`text-xs px-2 py-1 ${bgAccentClass} rounded-full`}>
               {sectionRisks.length} {sectionRisks.length === 1 ? 'item' : 'items'}
             </span>
           </h3>
@@ -73,7 +89,7 @@ export default function RiskMitigations({ risks }) {
               >
                 <div className="flex justify-between mb-2 items-start">
                   <h4 className="font-medium text-base flex items-center">
-                    <span className={`inline-block w-5 h-5 rounded-full bg-${accentColor}-500/20 text-${accentColor}-600 dark:text-${accentColor}-400 flex items-center justify-center text-xs font-bold mr-2`}>
+                    <span className={`inline-flex items-center justify-center w-5 h-5 rounded-full ${bgAccentClass} ${textAccentClass} text-xs font-bold mr-2`}>
                       {index + 1}
                     </span>
                     {risk.title}
@@ -98,13 +114,13 @@ export default function RiskMitigations({ risks }) {
   return (
     <div className="vercel-card relative overflow-hidden">
       {/* Background decoration */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/5 dark:bg-red-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+      <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/5 dark:bg-green-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
       <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
       
       <div className="relative">
         <div className="flex items-center mb-6">
-          <div className="mr-3 p-2 bg-red-100/20 dark:bg-red-900/20 rounded-lg">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-red-600 dark:text-red-400" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <div className="mr-3 p-2 bg-green-100/20 dark:bg-green-900/20 rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-green-600 dark:text-green-400" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
               <line x1="12" y1="9" x2="12" y2="13"></line>
               <line x1="12" y1="17" x2="12.01" y2="17"></line>

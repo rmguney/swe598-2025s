@@ -99,9 +99,8 @@ export default function RiskForm({ onAnalysisComplete }) {
       <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
       <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/5 dark:bg-purple-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
       
-      {/* Content with relative positioning to ensure it's above the background elements */}
       <div className="relative">
-        <div className="flex items-center mb-6">
+        <div className="flex items-center mb-4">
           <div className="mr-3 p-2 bg-blue-100/20 dark:bg-blue-900/20 rounded-lg">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-blue-600 dark:text-blue-400" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
@@ -112,26 +111,26 @@ export default function RiskForm({ onAnalysisComplete }) {
           <h2 className="text-2xl font-bold tracking-tight vercel-gradient-text">Project Risk Analysis</h2>
         </div>
         
-        <p className="mb-6 opacity-70 text-sm">
+        <p className="mb-4 opacity-70 text-sm">
           Enter your project details below to generate a comprehensive risk assessment using AI.
         </p>
         
         {/* Sample projects section */}
-        <div className="mb-8">
-          <h3 className="text-md font-medium mb-3 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+        <div className="mb-6 bg-[var(--secondary)]/30 p-3 rounded-lg border border-[var(--border)]/50">
+          <h3 className="text-sm font-medium mb-2 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1.5">
               <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
               <line x1="8" y1="21" x2="16" y2="21"></line>
               <line x1="12" y1="17" x2="12" y2="21"></line>
             </svg>
-            Sample Projects
+            Sample Projects - Click to fill form:
           </h3>
           <div className="flex flex-wrap gap-2">
             {sampleProjects.map((project, index) => (
               <button 
                 key={index}
                 onClick={() => applyProjectTemplate(project)}
-                className="text-sm bg-[var(--secondary)] hover:bg-[var(--secondary)]/80 px-3 py-1.5 rounded border border-[var(--border)] transition-colors flex items-center gap-1.5"
+                className="text-sm bg-[var(--secondary)] hover:bg-[var(--secondary)]/80 px-3 py-1.5 rounded-md border border-[var(--border)] transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <div className={`w-2 h-2 rounded-full ${
                   project.industry === 'technology' ? 'bg-blue-500' :
@@ -145,12 +144,12 @@ export default function RiskForm({ onAnalysisComplete }) {
           </div>
         </div>
         
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="space-y-4">
               <div className="bg-[var(--secondary)]/50 p-4 rounded-lg">
                 <h3 className="text-md font-medium mb-3 flex items-center">
-                  <span className="inline-block w-5 h-5 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center text-xs font-bold mr-2">1</span>
+                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-500/20 text-blue-500 text-xs font-bold mr-2">1</span>
                   Project Basics
                 </h3>
               
@@ -192,7 +191,7 @@ export default function RiskForm({ onAnalysisComplete }) {
               
               <div className="bg-[var(--secondary)]/50 p-4 rounded-lg">
                 <h3 className="text-md font-medium mb-3 flex items-center">
-                  <span className="inline-block w-5 h-5 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center text-xs font-bold mr-2">2</span>
+                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-500/20 text-green-500 text-xs font-bold mr-2">2</span>
                   Resources
                 </h3>
               
@@ -210,7 +209,7 @@ export default function RiskForm({ onAnalysisComplete }) {
                     />
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="gap-3">
                     <div>
                       <label className="block text-sm mb-1 opacity-80 font-medium">Timeline (months)</label>
                       <input
@@ -241,10 +240,10 @@ export default function RiskForm({ onAnalysisComplete }) {
               </div>
             </div>
             
-            <div className="space-y-5">
+            <div className="space-y-4">
               <div className="bg-[var(--secondary)]/50 p-4 rounded-lg">
                 <h3 className="text-md font-medium mb-3 flex items-center">
-                  <span className="inline-block w-5 h-5 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center text-xs font-bold mr-2">3</span>
+                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-purple-500/20 text-purple-500 text-xs font-bold mr-2">3</span>
                   Project Details
                 </h3>
                 
@@ -263,7 +262,7 @@ export default function RiskForm({ onAnalysisComplete }) {
               
               <div className="bg-[var(--secondary)]/50 p-4 rounded-lg">
                 <h3 className="text-md font-medium mb-3 flex items-center">
-                  <span className="inline-block w-5 h-5 rounded-full bg-orange-500/20 text-orange-500 flex items-center justify-center text-xs font-bold mr-2">4</span>
+                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-orange-500/20 text-orange-500 text-xs font-bold mr-2">4</span>
                   Objectives &amp; Constraints
                 </h3>
                 
@@ -294,11 +293,11 @@ export default function RiskForm({ onAnalysisComplete }) {
             </div>
           </div>
           
-          <div className="pt-4 flex justify-end">
+          <div className="pt-2 lg:pt-0 flex justify-end">
             <button
               type="submit"
               disabled={loading}
-              className="vercel-button-primary group relative overflow-hidden"
+              className="vercel-button-primary group relative overflow-hidden cursor-pointer"
             >
               <span className="relative z-10 flex items-center">
                 {loading ? (

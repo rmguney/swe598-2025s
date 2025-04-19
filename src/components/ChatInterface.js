@@ -1,67 +1,66 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { chatWithGemini } from "../utils/gemini-client";
+import { useState } from "react";
+import { sendChatMessage, directApiCall } from "../utils/gemini-client"; // Try importing directly
+// Alternatively, if it's a default export:
+// import geminiClient from "../utils/gemini-client";
+// const { sendChatMessage } = geminiClient; // Uncomment this if needed
 
 export default function ChatInterface({ risks }) {
-  const [messages, setMessages] = useState([
-    {
-      role: "system",
-      content: "Hi there! I'm your AI assistant. Ask me anything about the risk assessment results and I'll help you understand them better."
-    }
-  ]);
-  const [inputMessage, setInputMessage] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [messageInput, setMessageInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const handleSubmit = async (e) => {
+  
+  const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!inputMessage.trim()) return;
-
-    const userMessage = {
-      role: "user",
-      content: inputMessage
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setInputMessage("");
+    
+    if (!messageInput.trim()) return;
+    
+    const userMessage = messageInput;
+    setMessageInput("");
+    
+    const newMessages = [
+      ...messages,
+      { role: "user", content: userMessage }
+    ];
+    setMessages(newMessages);
+    
     setIsLoading(true);
-
     try {
-      const response = await chatWithGemini(inputMessage, risks, messages);
+      console.log("Sending message with risks:", JSON.stringify(risks).substring(0, 100) + "...");
       
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: response
+      // Try using the direct API call function if sendChatMessage isn't working
+      let response;
+      try {
+        response = await sendChatMessage(userMessage, risks);
+      } catch (innerError) {
+        console.error("sendChatMessage failed:", innerError);
+        // Fallback to direct API call if available
+        if (typeof directApiCall === 'function') {
+          const prompt = `User question: ${userMessage}\nContext (risk assessment data): ${JSON.stringify(risks)}`;
+          response = await directApiCall(prompt);
+        } else {
+          throw innerError; // Re-throw if no fallback available
         }
+      }
+      
+      setMessages([
+        ...newMessages,
+        { role: "assistant", content: response }
       ]);
     } catch (error) {
-      console.error("Error in chat:", error);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: "Sorry, I encountered an error processing your request. Please try again."
-        }
+      console.error("Chat error:", error);
+      setMessages([
+        ...newMessages,
+        { role: "assistant", content: `Error: ${error.message || "Unknown error occurred"}. Please check your API key configuration or try again.` }
       ]);
     } finally {
       setIsLoading(false);
     }
   };
-
+  
   return (
     <div className="vercel-card relative overflow-hidden">
-      {/* Background decoration */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/5 dark:bg-purple-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
       <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
       
@@ -72,102 +71,81 @@ export default function ChatInterface({ risks }) {
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
           </div>
-          <h2 className="text-2xl font-bold tracking-tight vercel-gradient-text">Risk Assessment Chat</h2>
+          <h2 className="text-2xl font-bold tracking-tight vercel-gradient-text">Conversational Risk Assistant</h2>
         </div>
         
-        <p className="mb-4 opacity-70 text-sm">
-          Ask questions about your project risks and get AI-powered insights based on your assessment results.
+        <p className="mb-6 opacity-70 text-sm">
+          Ask questions about your risk assessment and receive AI-powered analysis and recommendations.
         </p>
-
-        {/* Messages container */}
-        <div className="bg-[var(--secondary)]/50 rounded-lg p-4 mb-4 h-[350px] overflow-y-auto">
-          {messages.filter(msg => msg.role !== "system").map((message, index) => (
-            <div
-              key={index}
-              className={`mb-3 ${
-                message.role === "user" ? "text-right" : "text-left"
-              }`}
-            >
-              <div
-                className={`inline-block max-w-[80%] rounded-lg p-3 ${
-                  message.role === "user"
-                    ? "bg-blue-500 text-white"
-                    : "bg-[var(--card)] border border-[var(--border)]"
-                }`}
-              >
-                {message.content}
+        
+        <div className="bg-[var(--card)] border border-[var(--border)] rounded-lg overflow-hidden">
+          <div className="h-[320px] overflow-y-auto p-4 space-y-4">
+            {messages.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-center opacity-60">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mb-3 text-purple-500">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <p className="text-sm font-medium">No messages yet</p>
+                <p className="text-xs mt-1">Ask a question about your risk assessment</p>
               </div>
-            </div>
-          ))}
-          {isLoading && (
-            <div className="text-left mb-3">
-              <div className="inline-block max-w-[80%] rounded-lg p-3 bg-[var(--card)] border border-[var(--border)]">
-                <div className="flex space-x-2 items-center">
-                  <div className="w-2 h-2 rounded-full bg-gray-500 animate-pulse"></div>
-                  <div className="w-2 h-2 rounded-full bg-gray-500 animate-pulse delay-150"></div>
-                  <div className="w-2 h-2 rounded-full bg-gray-500 animate-pulse delay-300"></div>
+            ) : (
+              messages.map((message, i) => (
+                <div 
+                  key={i} 
+                  className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                >
+                  <div 
+                    className={`rounded-lg p-3 max-w-[80%] ${
+                      message.role === "user" 
+                        ? "bg-blue-100/20 dark:bg-blue-900/20 text-foreground ml-auto" 
+                        : "bg-[var(--secondary)] border border-[var(--border)]"
+                    }`}
+                  >
+                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  </div>
+                </div>
+              ))
+            )}
+            
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="rounded-lg p-3 max-w-[80%] bg-[var(--secondary)] border border-[var(--border)]">
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse delay-150"></div>
+                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse delay-300"></div>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Input area */}
-        <form onSubmit={handleSubmit} className="flex items-center gap-2">
-          <input
-            type="text"
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            disabled={isLoading}
-            placeholder="Ask about your risk assessment..."
-            className="vercel-input flex-grow"
-          />
-          <button
-            type="submit"
-            disabled={isLoading || !inputMessage.trim()}
-            className="vercel-button-primary"
-          >
-            <span>Send</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="ml-2"
-            >
-              <path d="M22 2L11 13"></path>
-              <path d="M22 2l-7 20-4-9-9-4 20-7z"></path>
-            </svg>
-          </button>
-        </form>
-
-        {/* Suggested questions */}
-        <div className="mt-6 pt-4 border-t border-[var(--border)]">
-          <h3 className="text-sm font-medium mb-3">Suggested Questions</h3>
-          <div className="flex flex-wrap gap-2">
-            {[
-              "What's my biggest risk?",
-              "How can I mitigate critical risks?",
-              "Which risks need immediate attention?",
-              "Summarize my risk profile"
-            ].map((question, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  setInputMessage(question);
-                }}
-                className="text-sm bg-[var(--secondary)] hover:bg-[var(--secondary)]/80 px-3 py-1.5 rounded-full"
-              >
-                {question}
-              </button>
-            ))}
+            )}
           </div>
+          
+          <div className="border-t border-[var(--border)] p-3">
+            <form onSubmit={handleSendMessage} className="flex items-center gap-3">
+              <input
+                type="text"
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+                placeholder="Ask about your risks..."
+                className="flex-1 text-sm bg-[var(--background)] border border-[var(--border)] rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+              />
+              <button 
+                type="submit" 
+                disabled={isLoading || !messageInput.trim()}
+                className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded-md text-sm font-medium flex items-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+                Send
+              </button>
+            </form>
+          </div>
+        </div>
+        
+        <div className="mt-4 text-xs opacity-60">
+          <p>Try asking questions like "What are my critical risks?" or "How can I improve my risk profile?"</p>
         </div>
       </div>
     </div>

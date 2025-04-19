@@ -20,27 +20,33 @@ export async function POST(request) {
     
     // Construct prompt for the Gemini API
     const prompt = `
-      Analyze the following project for potential risks:
-      
+      You are a project risk analysis assistant.
+
+      Analyze the following project for potential risks using only the provided details.
+      Use standard risk management terminology and avoid speculation or unrelated risks.
+      Do not invent risks not directly supported by the input. Do not use synonyms for the same risk in different runs.
+      Use concise, formal language. For the same input, always return the same risks, in the same order, with the same wording, be very deterministic.
+
       Project Name: ${projectData.projectName}
       Industry: ${projectData.industry}
       Budget: $${projectData.budget}
       Timeline: ${projectData.timeline} months
       Team Size: ${projectData.teamSize}
-      
+
       Description: ${projectData.projectDescription}
-      
+
       Objectives: ${projectData.objectives}
-      
+
       Constraints: ${projectData.constraints}
-      
-      Please identify 5-10 potential risks for this project. For each risk:
-      1. Provide a brief title/description
-      2. Rate probability on a scale of 1-5 (1=very low, 5=very high)
-      3. Rate impact on a scale of 1-5 (1=minimal, 5=severe)
-      4. Suggest a mitigation strategy
-      
-      Return the response as a JSON array of risk objects with the following structure:
+
+      Identify 5-10 relevant risks for this project. For each risk:
+      - title: A brief, descriptive name
+      - probability: Integer 1-5 (1=very low, 5=very high)
+      - impact: Integer 1-5 (1=minimal, 5=severe)
+      - mitigation: 1-2 sentence practical mitigation strategy
+
+      Rank the risks by severity (probability × impact), highest first.
+      Output ONLY a JSON array of risk objects, each with the following structure and field order:
       [
         {
           "title": "Risk title/description",
@@ -49,9 +55,10 @@ export async function POST(request) {
           "mitigation": "Brief mitigation strategy"
         }
       ]
+      Do not include any explanation, commentary, or formatting outside the JSON array.
     `;
     
-    // Call the Gemini API - UPDATED MODEL NAME
+    // Call the Gemini API
     const geminiResponse = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
       {

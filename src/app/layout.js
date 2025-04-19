@@ -12,8 +12,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Project Risk Analyzer - AI-powered Risk Assessment",
-  description: "AI-powered risk assessment tool for project managers using Google Gemini API",
+  title: "Project Risk Analyzer",
+  description: "AI-powered Risk Assessment Tool",
 };
 
 export default function RootLayout({ children }) {
