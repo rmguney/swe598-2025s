@@ -193,7 +193,7 @@ export default function RiskForm({ onAnalysisComplete }) {
                     />
                   </div>
                   
-                  <div>
+                  <div>z
                     <label className="block text-sm mb-1 opacity-80 font-medium">Constraints</label>
                     <textarea
                       name="constraints"

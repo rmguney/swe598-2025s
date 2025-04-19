@@ -214,3 +214,87 @@ export async function directApiCall(prompt) {
   
   // Process response...
 }
+
+export async function chatWithGemini(userMessage, riskData, previousMessages = []) {
+  const apiKey = getApiKey();
+  
+  if (!apiKey) {
+    throw new Error("Gemini API key not found. Please configure it in settings.");
+  }
+
+  try {
+    // First, use our server endpoint to protect the API key
+    const response = await fetch('/api/gemini/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        userMessage,
+        riskData,
+        previousMessages: previousMessages.filter(msg => msg.role !== 'system') // Filter out system messages
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`API request failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.response;
+    
+  } catch (error) {
+    console.error('Error in chat interaction with Gemini API:', error);
+    
+    // For development/demo purposes, return mock response if API call fails
+    return generateMockChatResponse(userMessage, riskData);
+  }
+}
+
+// Generate mock chat responses for development/demo purposes
+function generateMockChatResponse(userMessage, riskData) {
+  const userMessageLower = userMessage.toLowerCase();
+  
+  if (userMessageLower.includes("biggest risk") || userMessageLower.includes("highest risk")) {
+    const sortedRisks = [...riskData].sort((a, b) => 
+      (b.probability * b.impact) - (a.probability * a.impact)
+    );
+    const highestRisk = sortedRisks[0];
+    
+    return `Based on the assessment, your biggest risk is "${highestRisk.title}" with a risk score of ${highestRisk.probability * highestRisk.impact} (probability: ${highestRisk.probability}, impact: ${highestRisk.impact}). The recommended mitigation strategy is: ${highestRisk.mitigation}`;
+  }
+  
+  if (userMessageLower.includes("mitigate") && userMessageLower.includes("critical")) {
+    const criticalRisks = riskData.filter(r => r.probability * r.impact > 15);
+    if (criticalRisks.length === 0) {
+      return "Good news! You don't have any risks classified as critical (score > 15) in your assessment.";
+    }
+    
+    return `You have ${criticalRisks.length} critical risks that need immediate attention. Here are the mitigation strategies for each:\n\n${
+      criticalRisks.map((risk, i) => `${i+1}. ${risk.title}: ${risk.mitigation}`).join('\n\n')
+    }`;
+  }
+  
+  if (userMessageLower.includes("immediate attention") || userMessageLower.includes("urgent")) {
+    const highPriorityRisks = riskData.filter(r => r.probability * r.impact > 10);
+    return `There are ${highPriorityRisks.length} risks requiring urgent attention (score > 10). The top 3 are: 
+    ${highPriorityRisks.slice(0, 3).map((r, i) => `${i+1}. ${r.title} (score: ${r.probability * r.impact})`).join('\n')}`;
+  }
+  
+  if (userMessageLower.includes("summarize") || userMessageLower.includes("summary")) {
+    const criticalCount = riskData.filter(r => r.probability * r.impact > 15).length;
+    const highCount = riskData.filter(r => {
+      const score = r.probability * r.impact;
+      return score > 10 && score <= 15;
+    }).length;
+    const mediumCount = riskData.filter(r => {
+      const score = r.probability * r.impact;
+      return score > 5 && score <= 10;
+    }).length;
+    const lowCount = riskData.filter(r => r.probability * r.impact <= 5).length;
+    
+    return `Your risk profile summary:\n\n• Critical risks: ${criticalCount}\n• High risks: ${highCount}\n• Medium risks: ${mediumCount}\n• Low risks: ${lowCount}\n\nAverage risk score: ${(riskData.reduce((acc, risk) => acc + (risk.probability * risk.impact), 0) / riskData.length).toFixed(1)} out of 25`;
+  }
+  
+  return "I'm your risk assessment assistant. I can help you understand your project risks better. Try asking about your biggest risks, mitigation strategies, or which risks need immediate attention.";
+}

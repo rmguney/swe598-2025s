@@ -4,6 +4,7 @@ import { useState } from "react";
 import RiskForm from "../../components/RiskForm";
 import RiskMatrix from "../../components/RiskMatrix";
 import RiskMitigations from "../../components/RiskMitigations";
+import ChatInterface from "../../components/ChatInterface";
 import Link from "next/link";
 
 export default function RiskAnalysisPage() {
@@ -12,6 +13,14 @@ export default function RiskAnalysisPage() {
 
   const handleAnalysisComplete = (results) => {
     setAnalysisResults(results);
+  };
+
+  const navigateToChat = () => {
+    // Store the risk data in localStorage before navigating
+    if (analysisResults) {
+      localStorage.setItem("riskAssessmentData", JSON.stringify(analysisResults));
+    }
+    window.location.href = "/chat";
   };
 
   return (
@@ -37,7 +46,7 @@ export default function RiskAnalysisPage() {
           
           {analysisResults && (
             <>
-              <div className="flex border-b border-[var(--border)]">
+              <div className="flex border-b border-[var(--border)] overflow-x-auto">
                 <button 
                   className={`tab-button ${activeTab === "matrix" ? "active" : ""}`}
                   onClick={() => setActiveTab("matrix")}
@@ -56,11 +65,23 @@ export default function RiskAnalysisPage() {
                 >
                   Summary
                 </button>
+                <button 
+                  className={`tab-button ${activeTab === "chat" ? "active" : ""}`}
+                  onClick={() => setActiveTab("chat")}
+                >
+                  <div className="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1.5">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    Chat Assistant
+                  </div>
+                </button>
               </div>
               
               <div className="py-4">
                 {activeTab === "matrix" && <RiskMatrix risks={analysisResults} />}
                 {activeTab === "mitigations" && <RiskMitigations risks={analysisResults} />}
+                {activeTab === "chat" && <ChatInterface risks={analysisResults} />}
                 {activeTab === "summary" && (
                   <div className="vercel-card relative overflow-hidden">
                     {/* Background decoration */}
@@ -225,6 +246,15 @@ export default function RiskAnalysisPage() {
                           </svg>
                           Share
                         </button>
+                        <button 
+                          onClick={navigateToChat}
+                          className="vercel-button-primary group"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="mr-1.5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                          </svg>
+                          Chat with Results
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -234,6 +264,19 @@ export default function RiskAnalysisPage() {
           )}
         </div>
       </main>
+      {analysisResults && (
+        <div className="fixed bottom-8 right-8">
+          <button
+            onClick={navigateToChat}
+            className="rounded-full bg-blue-600 p-4 text-white shadow-lg hover:bg-blue-700 transition-colors"
+            title="Chat with Results"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
   );
 }
