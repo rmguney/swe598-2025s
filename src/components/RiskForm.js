@@ -16,6 +16,50 @@ export default function RiskForm({ onAnalysisComplete }) {
     constraints: ""
   });
 
+  // Sample project templates for quick selection
+  const sampleProjects = [
+    {
+      name: "E-commerce Platform Migration",
+      description: "Migrate our existing e-commerce platform to a cloud-based solution with enhanced features and improved scalability. The project involves data migration, integrating with payment gateways, and minimal downtime requirements.",
+      industry: "technology",
+      budget: "150000",
+      timeline: "6",
+      teamSize: "8",
+      objectives: "Improve site performance by 40%\nIncrease mobile conversion rates\nReduce maintenance costs\nImprove security compliance",
+      constraints: "Must maintain 99.9% uptime during transition\nLimited budget for third-party tools\nMust complete before holiday shopping season"
+    },
+    {
+      name: "Hospital Management System Implementation",
+      description: "Deploy a comprehensive hospital management system that integrates patient records, billing, pharmacy, and staff scheduling. The system must comply with healthcare regulations and ensure patient data privacy.",
+      industry: "healthcare",
+      budget: "300000",
+      timeline: "10",
+      teamSize: "12",
+      objectives: "Digitize all patient records\nStreamline billing processes\nImprove appointment scheduling efficiency\nEnsure HIPAA compliance",
+      constraints: "Minimal disruption to hospital operations\nStrict data security requirements\nIntegration with existing laboratory systems"
+    },
+    {
+      name: "Office Tower Construction",
+      description: "Construct a 15-story office building in the downtown business district, including parking facilities, sustainable design elements, and smart building technology.",
+      industry: "construction",
+      budget: "12000000",
+      timeline: "24",
+      teamSize: "45",
+      objectives: "Achieve LEED Gold certification\nComplete construction on schedule\nDeliver within budget\nIncorporate energy-efficient systems",
+      constraints: "Downtown zoning restrictions\nLimited construction hours due to noise ordinances\nSupply chain challenges for specialized materials"
+    },
+    {
+      name: "Financial Trading Platform Upgrade",
+      description: "Upgrade our trading platform to support high-frequency trading with improved risk management features and regulatory compliance reporting.",
+      industry: "finance",
+      budget: "500000",
+      timeline: "8",
+      teamSize: "15",
+      objectives: "Reduce transaction processing time by 50%\nImplement advanced risk analytics\nEnsure compliance with new financial regulations\nImprove system reliability",
+      constraints: "Zero downtime during market hours\nStrict regulatory requirements\nLegacy system integration challenges"
+    }
+  ];
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -34,6 +78,19 @@ export default function RiskForm({ onAnalysisComplete }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const applyProjectTemplate = (template) => {
+    setFormData({
+      projectName: template.name || "",
+      projectDescription: template.description || "",
+      industry: template.industry || "",
+      budget: template.budget || "",
+      timeline: template.timeline || "",
+      teamSize: template.teamSize || "",
+      objectives: template.objectives || "",
+      constraints: template.constraints || ""
+    });
   };
 
   return (
@@ -58,6 +115,35 @@ export default function RiskForm({ onAnalysisComplete }) {
         <p className="mb-6 opacity-70 text-sm">
           Enter your project details below to generate a comprehensive risk assessment using AI.
         </p>
+        
+        {/* Sample projects section */}
+        <div className="mb-8">
+          <h3 className="text-md font-medium mb-3 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
+            Sample Projects
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {sampleProjects.map((project, index) => (
+              <button 
+                key={index}
+                onClick={() => applyProjectTemplate(project)}
+                className="text-sm bg-[var(--secondary)] hover:bg-[var(--secondary)]/80 px-3 py-1.5 rounded border border-[var(--border)] transition-colors flex items-center gap-1.5"
+              >
+                <div className={`w-2 h-2 rounded-full ${
+                  project.industry === 'technology' ? 'bg-blue-500' :
+                  project.industry === 'healthcare' ? 'bg-green-500' :
+                  project.industry === 'finance' ? 'bg-purple-500' :
+                  project.industry === 'construction' ? 'bg-orange-500' : 'bg-gray-500'
+                }`}></div>
+                {project.name}
+              </button>
+            ))}
+          </div>
+        </div>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -193,7 +279,7 @@ export default function RiskForm({ onAnalysisComplete }) {
                     />
                   </div>
                   
-                  <div>z
+                  <div>
                     <label className="block text-sm mb-1 opacity-80 font-medium">Constraints</label>
                     <textarea
                       name="constraints"
