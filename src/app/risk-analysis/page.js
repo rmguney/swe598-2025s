@@ -6,6 +6,7 @@ import RiskMatrix from "../../components/RiskMatrix";
 import RiskMitigations from "../../components/RiskMitigations";
 import ChatInterface from "../../components/ChatInterface";
 import Link from "next/link";
+import Header from "@/components/Header";
 
 export default function RiskAnalysisPage() {
   const [analysisResults, setAnalysisResults] = useState(null);
@@ -216,20 +217,7 @@ export default function RiskAnalysisPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="vercel-header h-[var(--header-height)] fixed top-0 inset-x-0 z-10 bg-opacity-80 dark:bg-opacity-70">
-        <div className="max-w-vercel mx-auto h-full flex items-center justify-between px-6">
-          <div className="flex items-center gap-6">
-            <h1 className="font-bold text-lg pt-3 pr-4">Risk Analyzer</h1>
-            <Link href="/" className="text-sm font-medium flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity pt-1">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M19 12H5"></path>
-                <path d="M12 19l-7-7 7-7"></path>
-              </svg>
-              Home
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Header title="RiskPredict" />
       
       <main className="pt-[calc(var(--header-height)+2rem)] pb-16 px-6">
         <div className="max-w-vercel mx-auto space-y-8">
@@ -237,6 +225,7 @@ export default function RiskAnalysisPage() {
           
           {analysisResults && (
             <>
+              {/* Tab navigation */}
               <div className="flex border-b border-[var(--border)] overflow-x-auto">
                 <button 
                   className={`tab-button ${activeTab === "matrix" ? "active" : ""}`}
@@ -291,12 +280,13 @@ export default function RiskAnalysisPage() {
                 </button>
               </div>
               
-              <div> 
+              {/* Tab content */}
+              <div>
                 {activeTab === "matrix" && <RiskMatrix risks={analysisResults} />}
                 {activeTab === "mitigations" && <RiskMitigations risks={analysisResults} />}
                 {activeTab === "chat" && <ChatInterface risks={analysisResults} />}
                 {activeTab === "summary" && (
-                  <div className="vercel-card relative overflow-hidden"> 
+                  <div className="vercel-card relative overflow-hidden">
                     {/* Background decoration */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 dark:bg-amber-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
@@ -476,7 +466,76 @@ export default function RiskAnalysisPage() {
       </main>
       
       {/* Share Modal */}
-      {showShareModal && <ShareModal />}
+      {showShareModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-6">
+          <div className="bg-[var(--card)] border border-[var(--border)] rounded-lg p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-medium">Share Risk Assessment</h3>
+              <button 
+                onClick={() => setShowShareModal(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+            
+            <div className="mb-6">
+              <label className="block text-sm font-medium mb-2">Share link</label>
+              <div className="flex">
+                <input 
+                  type="text" 
+                  value={`${window.location.origin}/shared-risk/${btoa(JSON.stringify(analysisResults))}`} 
+                  readOnly
+                  className="vercel-input flex-grow"
+                />
+                <button 
+                  className="ml-2 vercel-button-secondary"
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${window.location.origin}/shared-risk/${btoa(JSON.stringify(analysisResults))}`);
+                    alert("Link copied to clipboard");
+                  }}
+                >
+                  Copy
+                </button>
+              </div>
+              <p className="text-xs mt-2 opacity-70">Anyone with this link can view your risk assessment.</p>
+            </div>
+            
+            <div className="mb-6">
+              <label className="block text-sm font-medium mb-2">Share via</label>
+              <div className="flex gap-3">
+                <button className="flex flex-1 justify-center items-center gap-2 vercel-button-secondary">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                  </svg>
+                  Email
+                </button>
+                <button className="flex flex-1 justify-center items-center gap-2 vercel-button-secondary">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+                    <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+                    <line x1="6" y1="1" x2="6" y2="4"></line>
+                    <line x1="10" y1="1" x2="10" y2="4"></line>
+                    <line x1="14" y1="1" x2="14" y2="4"></line>
+                  </svg>
+                  Slack
+                </button>
+              </div>
+            </div>
+            
+            <button 
+              onClick={() => setShowShareModal(false)} 
+              className="w-full vercel-button-primary"
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

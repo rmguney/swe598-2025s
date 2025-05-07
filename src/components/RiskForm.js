@@ -94,12 +94,12 @@ export default function RiskForm({ onAnalysisComplete }) {
   };
 
   return (
-    <div className="vercel-card relative overflow-hidden">
-      {/* Design embellishment */}
+    <div className="vercel-card relative overflow-hidden w-full">
+      {/* Background decoration */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
       <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/5 dark:bg-purple-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
       
-      <div className="relative">
+      <div className="relative w-full">
         <div className="flex items-center mb-4">
           <div className="mr-3 p-2 bg-blue-100/20 dark:bg-blue-900/20 rounded-lg">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-blue-600 dark:text-blue-400" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -144,7 +144,7 @@ export default function RiskForm({ onAnalysisComplete }) {
           </div>
         </div>
         
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-5 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="space-y-4">
               <div className="bg-[var(--secondary)]/50 p-4 rounded-lg">

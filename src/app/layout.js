@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Project Risk Analyzer",
+  title: "RiskPredict",
   description: "AI-powered Risk Assessment Tool",
 };
 
