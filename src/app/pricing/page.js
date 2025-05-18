@@ -50,8 +50,8 @@ export default function PricingPage() {
       name: "Enterprise",
       description: "For organizations with mission-critical projects",
       price: {
-        monthly: 199,
-        yearly: 159,
+        monthly: "Contact Sales",
+        yearly: "Contact Sales",
       },
       features: [
         "Unlimited projects",
@@ -159,8 +159,14 @@ export default function PricingPage() {
                   </div>
                   
                   <div className="flex items-baseline mb-5">
-                    <span className="text-3xl font-bold">${plan.price[billingCycle]}</span>
-                    <span className="text-sm opacity-70 ml-1">/mo</span>
+                    {typeof plan.price[billingCycle] === 'number' ? (
+                      <>
+                        <span className="text-3xl font-bold">${plan.price[billingCycle]}</span>
+                        <span className="text-sm opacity-70 ml-1">/mo</span>
+                      </>
+                    ) : (
+                      <span className="text-3xl font-bold">{plan.price[billingCycle]}</span>
+                    )}
                   </div>
                   
                   <ul className="space-y-3 mb-6 flex-grow">
@@ -257,7 +263,7 @@ export default function PricingPage() {
                     </svg>
                   </summary>
                   <div className="p-4 pt-0 text-sm opacity-70">
-                    We offer special pricing for educational institutions, non-profits, and startups. Contact our sales team to learn more about our discount programs.
+                    We offer special pricing for educational institutions, non-profits, and startups. Contact our sales team to learn more about our discount programs. Free trials are also available for students, educators, and individual users.
                   </div>
                 </details>
               </div>
